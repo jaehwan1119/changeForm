@@ -1,12 +1,10 @@
 import openpyxl
-import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill, Border, Side
-from openpyxl.styles import colors
 from openpyxl.styles import Color
 
-
-def style(ws:openpyxl.worksheet.worksheet.Worksheet, start_row, start_col, end_row, end_col):
+# 색상을 채우고 테두리를 그리는 함수
+def style(ws:openpyxl.worksheet.worksheet.Worksheet, start_row: int, start_col: int, end_row: int, end_col: int) -> None:
     # 색상 및 테두리 스타일 지정
     fill = PatternFill(fill_type="solid", fgColor=Color('E2E2E2'))
     thin_border = Border(
@@ -22,7 +20,7 @@ def style(ws:openpyxl.worksheet.worksheet.Worksheet, start_row, start_col, end_r
             cell.fill = fill
             cell.border = thin_border
 
-def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet):
+def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
     start_row = None
     start_col = None
     end_row = None
@@ -87,11 +85,12 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
     # 최초생성 워크시트 삭제
     new_wb.remove_sheet(new_wb['Sheet'])
 
+    # 원본파일의 시트 개수만큼 반복
     for i in range(len(sheet_names)):
         ws = wb[sheet_base + sheet_names[i]]
 
         all_values = []
-        row_idx = 1
+        row_idx = 1 # 시트 순회할 때 row 위치 추적을 위한 index
         for row in ws.rows:
             row_value = []
 
@@ -100,7 +99,7 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
             # 내용 총점 행을 추가할 list
             detail_total = []
 
-            # 기존의 내용을 순회하며 리스트에 데이터 추가
+            # 기존의 내용을 순회하며 데이터 생성
             for cell in row:
                 row_value.append(cell.value)
                 start_idx = row_idx - 2
@@ -119,6 +118,7 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
 
             all_values.append(row_value)
 
+            # 요약문 글자수와 내용 총점을 리스트에 추가
             if summary_len:
                 all_values.append(summary_len)
                 row_idx += 1
@@ -126,6 +126,7 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
                 all_values.append(detail_total)
                 row_idx += 1
 
+        # 워크시트 생성
         new_ws = new_wb.create_sheet(title=sheet_base + sheet_names[i])
 
         # 생성한 데이터를 새 워크시트에 저장
@@ -133,6 +134,7 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
             new_ws.append(row)
         # 병합하고 스타일 지정
         merge_cell(new_ws)
+
     return new_wb
 
 
