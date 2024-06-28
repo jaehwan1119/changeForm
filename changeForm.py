@@ -4,9 +4,12 @@ from openpyxl.styles import PatternFill, Border, Side
 from openpyxl.styles import Color
 
 # 색상을 채우고 테두리를 그리는 함수
-def style(ws:openpyxl.worksheet.worksheet.Worksheet, start_row: int, start_col: int, end_row: int, end_col: int) -> None:
+def style(ws:openpyxl.worksheet.worksheet.Worksheet, start_row: int, start_col: int, end_row: int, end_col: int, rmflag: int) -> None:
     # 색상 및 테두리 스타일 지정
-    fill = PatternFill(fill_type="solid", fgColor=Color('E2E2E2'))
+    if rmflag == 0:
+        fill = PatternFill(fill_type="solid", fgColor=Color('E2E2E2'))
+    else:
+        fill = PatternFill(fill_type="solid", fgColor=Color('FFFFFF'))
     thin_border = Border(
         left=Side(style='thin'),
         right=Side(style='thin'),
@@ -26,6 +29,9 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
     end_row = None
     end_col = None
 
+    rmcolor_row = None
+    rmcolor_col = None
+
     # 색상채우기 및 테두리
     for row in ws.rows:
         for cell in row:
@@ -36,8 +42,13 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
             elif cell.value == '총점':
                 end_row = cell.row
                 end_col = cell.column + 5
+
+            elif cell.value == '내용 총점':
+                rmcolor_row = cell.row
+                rmcolor_col = cell.column
         if end_row is not None:
-            style(ws, start_row, start_col, end_row, end_col)
+            style(ws, start_row, start_col, end_row, end_col, 0)
+            style(ws, rmcolor_row, rmcolor_col, rmcolor_row, rmcolor_col + 5, 1)
 
             start_row = None
             start_col = None
@@ -90,7 +101,10 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
         ws = wb[sheet_base + sheet_names[i]]
 
         all_values = []
-        row_idx = 1 # 시트 순회할 때 row 위치 추적을 위한 index
+        # 시트 순회할 때 row 위치 추적을 위한 index
+        row_idx = 1
+        # sheet의 순번을 기록할 변수
+        cnt = 1
         for row in ws.rows:
             row_value = []
 
@@ -108,6 +122,9 @@ def change_form(excel_path:str) -> openpyxl.Workbook:
                     summary_len = ['요약문 글자수', None, None,
                                    len(ws.cell(row=cell.row, column=cell.column + 3).value), None,
                                    len(ws.cell(row=cell.row, column=cell.column + 5).value), None, None]
+                elif cell.value == '내용':
+                    row_value[0] = cnt
+                    cnt += 1
                 elif cell.value == '논거 및 실천 방안':
                     detail_total = [None, '내용 총점', None, f'=SUM(D{start_idx}:D{end_idx})', None,
                                     f'=SUM(F{start_idx}:F{end_idx})', None, None]
