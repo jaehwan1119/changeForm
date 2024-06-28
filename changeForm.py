@@ -39,7 +39,6 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet):
                 end_row = cell.row
                 end_col = cell.column + 5
         if end_row is not None:
-            print(start_row, start_col, end_row, end_col)
             style(ws, start_row, start_col, end_row, end_col)
 
             start_row = None
@@ -71,11 +70,12 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet):
         for a in merge_list:
             ws.merge_cells(f'{a}{idx+7}:{a}{idx+9}')
 
+        ws.merge_cells(f'B{idx+10}:C{idx+10}')
         ws.merge_cells(f'B{idx+13}:C{idx+13}')
 
         idx += paragraph_size
 
-def change_form(excel_path:str):
+def change_form(excel_path:str) -> openpyxl.Workbook:
     # 여러개의 sheet를 건너가며 데이터를 가져오기 위해 아래 문자열과 리스트 선언
     sheet_base = 'SUMVAL_'
     sheet_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
@@ -90,15 +90,17 @@ def change_form(excel_path:str):
     for i in range(len(sheet_names)):
         ws = wb[sheet_base + sheet_names[i]]
 
-        print('\n-----모든 행과 열 출력-----')
         all_values = []
         row_idx = 1
         for row in ws.rows:
             row_value = []
 
+            # 요약문 글자수 행을 추가할 list
             summary_len = []
+            # 내용 총점 행을 추가할 list
             detail_total = []
 
+            # 기존의 내용을 순회하며 리스트에 데이터 추가
             for cell in row:
                 row_value.append(cell.value)
                 start_idx = row_idx - 2
@@ -126,26 +128,12 @@ def change_form(excel_path:str):
 
         new_ws = new_wb.create_sheet(title=sheet_base + sheet_names[i])
 
+        # 생성한 데이터를 새 워크시트에 저장
         for row in all_values:
             new_ws.append(row)
-
+        # 병합하고 스타일 지정
         merge_cell(new_ws)
-
-
-    new_wb.save('test.xlsx')
-
-    # sheet 순회
-    # for sheet_name in sheet_names:
-    #     sheet_df = pd.read_excel(excel_path, header=None, dtype=str, sheet_name=sheet_base+sheet_name)
-    #     i=0
-    #     sheet_len = len(sheet_df)
-        # sheet 문서 순회
-        # while i < sheet_len:
-
-    # excel파일의 DataFrame
-    # excel_df = pd.read_excel(excel_path, header=None, dtype=str)
-
-    # print(excel_df)
+    return new_wb
 
 
 
