@@ -59,7 +59,7 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
     idx = 1
     paragraph_size = 14
     sheet_len = ws.max_row
-    while idx <= sheet_len:
+    while ws.cell(row=idx, column=1).value is not None:
         # 1부터 6회 반복
         for i in range(idx, idx+6):
             ws.merge_cells(f'A{i}:C{i}')
@@ -102,9 +102,9 @@ def change_form(excel_path:str, sheet_base:str) -> openpyxl.Workbook:
     # 기존의 excel 파일
     wb = load_workbook(excel_path, data_only=True)
     # 새 데이터를 저장할 workbook
-    new_wb = Workbook()
+    # new_wb = Workbook()
     # 최초생성 워크시트 삭제
-    new_wb.remove_sheet(new_wb['Sheet'])
+    # new_wb.remove_sheet(new_wb['Sheet'])
 
     # 원본파일의 시트 개수만큼 반복
     for i in range(len(sheet_names)):
@@ -153,16 +153,17 @@ def change_form(excel_path:str, sheet_base:str) -> openpyxl.Workbook:
                 all_values.append(detail_total)
                 row_idx += 1
 
+        wb.remove(ws)
         # 워크시트 생성
-        new_ws = new_wb.create_sheet(title=sheet_base + sheet_names[i])
+        ws = wb.create_sheet(title=sheet_base + sheet_names[i])
 
         # 생성한 데이터를 새 워크시트에 저장
         for row in all_values:
-            new_ws.append(row)
+            ws.append(row)
         # 병합하고 스타일 지정
-        merge_cell(new_ws)
+        merge_cell(ws)
 
-    return new_wb
+    return wb
 
 
 
