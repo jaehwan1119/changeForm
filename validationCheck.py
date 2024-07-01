@@ -2,6 +2,7 @@ import openpyxl.worksheet.worksheet
 import openpyxl
 from openpyxl import load_workbook
 from changeForm import change_form
+from main import excel_path, save_path
 def validationCheck(ws1:openpyxl.worksheet.worksheet.Worksheet, ws2:openpyxl.worksheet.worksheet.Worksheet) -> None:
     if ws1.max_row != ws2.max_row or ws1.max_column != ws2.max_column:
         print("Exception: Worksheets have different dimensions.")
@@ -21,8 +22,8 @@ def validationCheck(ws1:openpyxl.worksheet.worksheet.Worksheet, ws2:openpyxl.wor
                 print('[check_target]')
                 print(cell2.value)
 
-excel_path = '/Users/dataly/Desktop/1E_1S_요약_평가_수정.xlsx'
-save_path = '/Users/dataly/Desktop/1E_1S_요약_평가.xlsx'
+# excel_path = '/Users/dataly/Desktop/1E_1S_요약_평가_수정.xlsx'
+# save_path = '/Users/dataly/Desktop/1E_1S_요약_평가.xlsx'
 
 sheet_base = 'SUMVAL_'
 sheet_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']

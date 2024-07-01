@@ -76,17 +76,27 @@ def merge_cell(ws:openpyxl.worksheet.worksheet.Worksheet) -> None:
         ws.merge_cells(f'A{idx+7}:A{idx+13}')
 
         merge_list = ['B', 'E', 'G']
+
+
         for a in merge_list:
+
+            # 병합 전 데이터 저장
+            merged_cell_data = []
+            for row in range(7, 10):
+                if ws.cell(row=idx+row, column=ord(a)-64).value is not None:
+                    merged_cell_data.append(ws.cell(row=idx+row, column=ord(a)-64).value)
+
+            merged_cell_data_str = '\n'.join(merged_cell_data)
             ws.merge_cells(f'{a}{idx+7}:{a}{idx+9}')
+            ws.cell(row=idx+7, column=ord(a)-64).value = merged_cell_data_str
 
         ws.merge_cells(f'B{idx+10}:C{idx+10}')
         ws.merge_cells(f'B{idx+13}:C{idx+13}')
 
         idx += paragraph_size
 
-def change_form(excel_path:str) -> openpyxl.Workbook:
+def change_form(excel_path:str, sheet_base:str) -> openpyxl.Workbook:
     # 여러개의 sheet를 건너가며 데이터를 가져오기 위해 아래 문자열과 리스트 선언
-    sheet_base = 'SUMVAL_'
     sheet_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
     # 기존의 excel 파일

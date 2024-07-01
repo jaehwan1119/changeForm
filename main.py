@@ -3,11 +3,15 @@ from changeForm import change_form
 
 start_time = time.time()
 
-# excel 파일 path
-excel_path = '/Users/dataly/Desktop/1E_1S_요약_평가_수정.xlsx'
-save_path = '/Users/dataly/Desktop/1E_1S_요약_평가.xlsx'
+fileList = ['A', 'B', 'C']
 
-change_form(excel_path).save(save_path)
+for name in fileList:
+    # excel 파일 path
+    excel_path = f'/Users/dataly/Desktop/24년 요약 평가 작업 1E_1S (24.06.03~06.10) ({name}팀)_198건.xlsx'
+    save_path = f'/Users/dataly/Desktop/24년 요약 평가 작업 1E_1S (24.06.03~06.10) ({name}팀)_198건_result.xlsx'
+    sheet_base = f'SUMVAL_{name}_'
+
+    change_form(excel_path, sheet_base).save(save_path)
 
 end_time = time.time()
 print(end_time - start_time)
